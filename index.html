@@ -286,13 +286,25 @@
         <div class="path-selection">
             <h2>Choose Your Path</h2>
             <div class="path-options">
+                <div class="path-option" onclick="selectPath('champOrSoul')" id="champOrSoul">
+                    <h3>Champion OR Soul</h3>
+                    <div class="path-cost">82,250-92,250 Hero Coins</div>
+                    <div class="path-rewards">
+                        Choose one path:<br>
+                        • Soul: 50,000 (cheaper option)<br>
+                        • Champion: 60,000 (more expensive)<br>
+                        • Middle path: 12,000<br>
+                        • Right Side Key: 20,250
+                    </div>
+                </div>
+
                 <div class="path-option" onclick="selectPath('champAndSoul')" id="champAndSoul">
-                    <h3>Champion + Soul</h3>
-                    <div class="path-cost">110,000 Hero Coins</div>
+                    <h3>Champion AND Soul</h3>
+                    <div class="path-cost">180,000 Hero Coins</div>
                     <div class="path-rewards">
                         • Right Side Key: 20,250<br>
                         • Left Side Key: 27,750<br>
-                        • Middle to Champ: 12,000<br>
+                        • Middle to Champ AND Soul: 22,000<br>
                         • Champion: 60,000<br>
                         • Soul: 50,000 (requires both keys)
                     </div>
@@ -326,7 +338,7 @@
                         Choose specific components:<br>
                         • Right Key: 20,250<br>
                         • Left Key: 27,750<br>
-                        • Middle: 12,000<br>
+                        • Middle to Champ AND Soul: 22,000<br>
                         • Champion: 60,000<br>
                         • Soul: 50,000
                     </div>
@@ -343,7 +355,7 @@
                         <label><input type="checkbox" id="leftKey"> Left Side Key (27,750)</label>
                     </div>
                     <div class="input-item">
-                        <label><input type="checkbox" id="middle"> Middle Path (12,000)</label>
+                        <label><input type="checkbox" id="middleChampAndSoul"> Middle to Champ AND Soul (22,000)</label>
                     </div>
                     <div class="input-item">
                         <label><input type="checkbox" id="champion"> Champion (60,000)</label>
@@ -477,7 +489,8 @@
     <script>
         // Path costs
         const PATH_COSTS = {
-            champAndSoul: 110000,
+            champOrSoul: 87250, // Average: Right key (20,250) + Middle (12,000) + avg of Champion/Soul (55,000)
+            champAndSoul: 180000,
             mythicalOnly: 57750,
             allMaterials: 84500,
             custom: 0
@@ -487,6 +500,7 @@
             rightKey: 20250,
             leftKey: 27750,
             middle: 12000,
+            middleChampAndSoul: 22000,
             champion: 60000,
             soul: 50000
         };
@@ -531,10 +545,11 @@
 
         function calculateCustomCost() {
             let cost = 0;
-            const components = ['rightKey', 'leftKey', 'middle', 'champion', 'soul'];
+            const components = ['rightKey', 'leftKey', 'middleChampAndSoul', 'champion', 'soul'];
             
             components.forEach(component => {
-                if (document.getElementById(component).checked) {
+                const element = document.getElementById(component);
+                if (element && element.checked) {
                     cost += COMPONENT_COSTS[component];
                 }
             });
@@ -569,7 +584,8 @@
                 } else {
                     targetCoins = PATH_COSTS[selectedPath];
                     pathName = {
-                        champAndSoul: "Champion + Soul",
+                        champOrSoul: "Champion OR Soul",
+                        champAndSoul: "Champion AND Soul",
                         mythicalOnly: "Mythical Materials Only",
                         allMaterials: "All Materials"
                     }[selectedPath];
@@ -626,8 +642,12 @@
         document.getElementById('stage10Energy').addEventListener('input', updateCalculations);
         
         // Custom path checkboxes
-        Object.keys(COMPONENT_COSTS).forEach(component => {
-            document.getElementById(component).addEventListener('change', updateCalculations);
+        const customComponents = ['rightKey', 'leftKey', 'middleChampAndSoul', 'champion', 'soul'];
+        customComponents.forEach(component => {
+            const element = document.getElementById(component);
+            if (element) {
+                element.addEventListener('change', updateCalculations);
+            }
         });
         
         // Initial calculation
